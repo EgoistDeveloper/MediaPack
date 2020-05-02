@@ -1,0 +1,81 @@
+﻿<dialog:DialogWindow x:Class="MediaPack.Dialogs.Channel.CapturesListDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MediaPack.Dialogs.Channel"
+        xmlns:dialog="clr-namespace:MediaPack.Dialogs"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        DataContext="{x:Null}">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type local:CapturesListDialog}" BasedOn="{StaticResource BasicWindowBaseStyle}"/>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CloseCommand}"/>
+    </Window.InputBindings>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="{Binding ResizeBorderThickness}"
+                      CaptionHeight="{Binding TitleHeight}"
+                      CornerRadius="0" GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid Margin="25 0 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Search -->
+        <TextBox Text="{Binding SearchTerm}"
+                 Tag="Kanal Ara"
+                 Height="35"
+                 Margin="0 0 25 10">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="KeyUp">
+                    <i:InvokeCommandAction Command="{Binding SearchChangedCommand}" 
+                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TextBox}}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+
+        <!-- List Items -->
+        <ListView x:Name="Captures" Grid.Row="1"
+                  ItemTemplate="{StaticResource CaptureDataTemplate}" 
+                  ItemsSource="{Binding Captures}"
+                  VerticalAlignment="Top"
+                  ScrollViewer.CanContentScroll="False"/>
+
+        <!-- Pagination -->
+        <Grid Grid.Row="2" Margin="0 5 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Page Navigation -->
+            <ListView ItemsSource="{Binding Pagination.Pages}"
+                      ItemTemplate="{StaticResource PaginationItemDataTemplate}"
+                      Visibility="{Binding ElementName=Captures, Path=HasItems,
+                                   Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+            <!-- Result Counts -->
+            <TextBlock Grid.Column="1"
+                       Foreground="{StaticResource Teal700Brush}"
+                       VerticalAlignment="Center"
+                       Margin="20 0">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} içerikten {1} tanesi listelendi">
+                        <Binding Path="Pagination.TotalItems"/>
+                        <Binding ElementName="Captures" Path="Items.Count"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </Grid>
+
+    </Grid>
+</dialog:DialogWindow>

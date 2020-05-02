@@ -1,0 +1,530 @@
+﻿<local:BasePage x:TypeArguments="viewmodel:ChannelViewModel" x:Class="MediaPack.UI.Pages.Channel"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MediaPack.UI.Pages"
+      xmlns:viewmodel="clr-namespace:MediaPack.ViewModel.Channel"
+      xmlns:locator="clr-namespace:MediaPack.ViewModel.Base"
+      xmlns:controls="clr-namespace:MediaPack.UI.Controls"
+      xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+      xmlns:li="clr-namespace:LoadingIndicators.WPF;assembly=LoadingIndicators.WPF" 
+      xmlns:command="http://www.galasoft.ch/mvvmlight"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Unloaded">
+            <command:EventToCommand Command="{Binding PageUnloadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Background="{StaticResource ThemeColor1Brush}">
+            <!--<i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseEnter">
+                    <i:InvokeCommandAction Command="{Binding ShowPlayerFrameCommand}" CommandParameter="true"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="MouseLeave">
+                    <i:InvokeCommandAction Command="{Binding ShowPlayerFrameCommand}" CommandParameter="false"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>-->
+
+            <ContentControl Content="{Binding MediaElement}"/>
+
+            <StackPanel VerticalAlignment="Center" 
+                        HorizontalAlignment="Center"
+                        Orientation="Vertical"
+                        Visibility="{Binding MediaElement.IsOpening, 
+                                     Converter={StaticResource BoolToVisibilityConverter}}">
+                <li:LoadingIndicator SpeedRatio="1" 
+                                     Foreground="{StaticResource Teal600Brush}"
+                                     Style="{StaticResource LoadingIndicatorDoubleBounceStyleKey}"/>
+                <TextBlock Margin="25 0" 
+                           FontSize="20"
+                           Text="Yükleniyor..."
+                           Foreground="{StaticResource Teal600Brush}"/>
+            </StackPanel>
+
+
+            <!--<Grid x:Name="PlayerInFrame" 
+                  Visibility="{Binding PlayerFrameVisibility, FallbackValue=Hidden}"
+                  IsEnabled="{Binding MediaElement.IsOpening,
+                                     Converter={StaticResource ReverseBoolConverter}}">
+                <Border Background="{StaticResource ThemeColor1Brush}"
+                        Opacity=".8"/>
+
+                <TextBlock Text="654534534534"
+                           Foreground="{StaticResource BlueGrey100Brush}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="33"/>
+            </Grid>-->
+        </Grid>
+
+        <!-- Control Bar -->
+        <Border Grid.Row="1" 
+                Grid.ColumnSpan="2"
+                Margin="0 20 0 0"
+                Background="{StaticResource ThemeColor2Brush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="15 0">
+                    <Border Height="50" Width="50"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource BlueGrey800Brush}"
+                            CornerRadius="5"
+                            ToolTip="{Binding Channel.Name}">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{Binding Channel.Logo}"
+                                        Stretch="Uniform"/>
+                        </Border.Background>
+                    </Border>
+
+                    <TextBlock Text="{Binding Channel.Name}"
+                               FontSize="18"
+                               Foreground="{StaticResource BlueGrey100Brush}"
+                               VerticalAlignment="Center"
+                               Margin="20"
+                               ToolTip="{Binding Channel.Description}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Margin="15" 
+                            Style="{StaticResource IconButtonStyle}"
+                            Tag="{Binding Source={StaticResource Reload}, Path=Data}"
+                            Command="{Binding ReloadStreamCommand}"
+                            ToolTip="Yayını Yeniden Yükle"/>
+                    
+                    <Grid>
+                        <Button Margin="15" 
+                                Style="{StaticResource IconButtonStyle}"
+                                Tag="{Binding Source={StaticResource Pause}, Path=Data}"
+                                Visibility="{Binding MediaElement.IsOpen,
+                                                     Converter={StaticResource BoolToVisibilityConverter}}"
+                                Command="{Binding PauseStreamCommand}"
+                                ToolTip="Duraklat"/>
+                        <Button Margin="15" 
+                                Style="{StaticResource IconButtonStyle}"
+                                Tag="{Binding Source={StaticResource Play}, Path=Data}"
+                                Visibility="{Binding MediaElement.IsOpen,
+                                                     Converter={StaticResource BoolToReverseVisibilityConverter}}"
+                                Command="{Binding PlayStreamCommand}"
+                                ToolTip="Oynat"/>
+                    </Grid>
+
+                    <Grid>
+                        <Button Margin="15" 
+                                Style="{StaticResource IconButtonStyle}"
+                                Tag="{Binding Source={StaticResource RecordCircleOutline}, Path=Data}"
+                                Visibility="{Binding RecordingStatus, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Command="{Binding RecordStreamCommand}"
+                                ToolTip="Kaydı Bitir"/>
+                        <Button Margin="15" 
+                                Style="{StaticResource IconButtonStyle}"
+                                Tag="{Binding Source={StaticResource RecordCircle}, Path=Data}"
+                                Visibility="{Binding RecordingStatus, Converter={StaticResource BoolToReverseVisibilityConverter}}"
+                                Command="{Binding RecordStreamCommand}"
+                                ToolTip="Kaydı Başlat"/>
+                    </Grid>
+
+                    <Button Margin="15" 
+                            Style="{StaticResource IconButtonStyle}"
+                            Tag="{Binding Source={StaticResource FormatListBulletedSquare}, Path=Data}"
+                            Command="{Binding OpenCapturesListCommand}"
+                            ToolTip="Kayıtları Görüntüle"/>
+
+                    <TextBlock Text="{Binding MediaElement.PacketBufferDuration,
+                                      StringFormat={}{0:mm}:{0:ss}, FallbackValue='00:00'}"
+                               Visibility="{Binding MediaElement.IsOpening,
+                                            Converter={StaticResource BoolToReverseVisibilityConverter}}"
+                               Foreground="{StaticResource Teal500Brush}"
+                               VerticalAlignment="Center"
+                               Margin="20 0"
+                               ToolTip="Önbellek Süresi"/>
+                </StackPanel>
+
+
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                    <Slider Value="{Binding MediaElement.Volume,
+                                    FallbackValue=50}"
+                            Minimum="0" Maximum="1" 
+                            Width="200"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"/>
+                    <Path Data="{Binding Source={StaticResource MonitorSpeaker}, Path=Data}"
+                          Fill="{StaticResource Teal200Brush}"
+                          Height="20" Width="20"
+                          Margin="15"
+                          Stretch="Uniform"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="0" Grid.Column="1" 
+              Width="{Binding RootGridWidth}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid ToolTip="Yayın hakkındaki teknik detaylar.">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#bb222222" Offset="0" />
+                        <GradientStop Color="#aa444444" Offset="0.6" />
+                        <GradientStop Color="#99222222" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Yayın Detayları"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource BlueGrey300Brush}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Visibility="{Binding PropertiesVisibility, FallbackValue=Hidden}"/>
+
+                <ToggleButton Grid.Column="1" 
+                          Height="35" Width="35" 
+                          Margin="0 0 10 0"
+                          IsChecked="True"
+                          Style="{StaticResource ToggleButtonStyle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:InvokeCommandAction Command="{Binding SetCollapseStatusCommand}"
+                                               CommandParameter="{Binding Path=IsChecked, 
+                                                                  RelativeSource={RelativeSource 
+                                                                    AncestorType={x:Type ToggleButton}}}"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="Unchecked">
+                            <i:InvokeCommandAction Command="{Binding SetCollapseStatusCommand}" 
+                                               CommandParameter="{Binding Path=IsChecked, 
+                                                                  RelativeSource={RelativeSource 
+                                                                    AncestorType={x:Type ToggleButton}}}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ToggleButton>
+            </Grid>
+
+            <Border Grid.Row="1" 
+                    Name="PropertyExplorerPanel" 
+                    Width="280"
+                    Visibility="{Binding PropertiesVisibility, FallbackValue=Hidden}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Margin" Value="0 10 0 0" />
+                        <Setter Property="Padding" Value="16,10,6,16" />
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#bb222222" Offset="0" />
+                                    <GradientStop Color="#aa444444" Offset="0.6" />
+                                    <GradientStop Color="#99222222" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="BorderBrush" Value="#66444444" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="DockPanel.Dock" Value="Right" />
+                    </Style>
+                </Border.Style>
+                <DockPanel LastChildFill="True">
+                    <!-- The Content -->
+                    <Grid x:Name="PropertyExplorerPanelContent"
+                          DataContext="{Binding MediaElement}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+                            <ItemsControl>
+                                <ItemsControl.Resources>
+                                    <LinearGradientBrush x:Key="KeyHeader" StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStopCollection>
+                                            <GradientStop Offset="0.0" Color="#ffffffff" />
+                                            <GradientStop Offset="0.03" Color="#bb0c0c0b" />
+                                            <GradientStop Offset="1.0" Color="#880c0c0b" />
+                                        </GradientStopCollection>
+                                    </LinearGradientBrush>
+                                    <Style TargetType="TextBlock" x:Key="Key">
+                                        <Setter Property="DockPanel.Dock" Value="Left" />
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                        <Setter Property="FontSize" Value="10"></Setter>
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="Foreground" Value="WhiteSmoke" />
+                                        <Setter Property="Padding" Value="6,3,0,3" />
+                                    </Style>
+                                    <Style TargetType="TextBlock" x:Key="Value">
+                                        <Setter Property="DockPanel.Dock" Value="Right" />
+                                        <Setter Property="Width" Value="126" />
+                                        <Setter Property="TextWrapping" Value="NoWrap" />
+                                        <Setter Property="FontFamily" Value="Courier New" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Setter Property="FontWeight" Value="Normal" />
+                                        <Setter Property="FontSize" Value="12" />
+                                        <Setter Property="Foreground" Value="WhiteSmoke" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                        <Setter Property="Padding" Value="0,3,2,0" />
+                                    </Style>
+                                    <Style TargetType="DockPanel">
+                                        <Setter Property="LastChildFill" Value="False" />
+                                    </Style>
+                                </ItemsControl.Resources>
+
+                                <DockPanel Background="{StaticResource KeyHeader}">
+                                    <TextBlock Style="{StaticResource Key}">Media Format</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding MediaFormat, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Media Size</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding MediaStreamSize, Mode=OneWay, Converter={StaticResource ByteFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Bit Rate</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding BitRate, Mode=OneWay, Converter={StaticResource BitFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Duration</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding NaturalDuration, Mode=OneWay, Converter={StaticResource TimeSpanFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Start Time</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding PlaybackStartTime, Mode=OneWay, Converter={StaticResource TimeSpanFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">End Time</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding PlaybackEndTime, Mode=OneWay, Converter={StaticResource TimeSpanFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Live Stream</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsLiveStream, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Network Stream</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsNetworkStream, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Can Stream Seek</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsSeekable, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Can Stream Pause</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding CanPause, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel Background="{StaticResource KeyHeader}">
+                                    <TextBlock Style="{StaticResource Key}">State</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding MediaState, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Position</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding Position, Mode=OneWay, Converter={StaticResource TimeSpanFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Frame Position</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding FramePosition, Mode=OneWay, Converter={StaticResource TimeSpanFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Open</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsOpen, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Opening</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsOpening, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Changing</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsChanging, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Seeking</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsSeeking, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Is Playing</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsPlaying, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Has Ended</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding HasMediaEnded, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel Background="{StaticResource KeyHeader}">
+                                    <TextBlock Style="{StaticResource Key}">Is Buffering</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding IsBuffering, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Decoding Bit Rate</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding DecodingBitRate, Mode=OneWay, Converter={StaticResource BitFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Buffering Progress</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding BufferingProgress, Mode=OneWay, Converter={StaticResource PercentageFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Download Progress</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding DownloadProgress, Mode=OneWay, Converter={StaticResource PercentageFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Buffered Packets</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding PacketBufferCount, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Buffered Bytes</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding PacketBufferLength, Mode=OneWay, Converter={StaticResource ByteFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Buffered Duration</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding PacketBufferDuration, Mode=OneWay, Converter={StaticResource TimeSpanFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel Background="{StaticResource KeyHeader}">
+                                    <TextBlock Style="{StaticResource Key}">Has Video</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding HasVideo, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Stream Index</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoStreamIndex, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Codec</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoCodec, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Accelerator</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoHardwareDecoder, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Bit Rate</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoBitRate, Mode=OneWay, Converter={StaticResource BitFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Rotation</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoRotation, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Width</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding NaturalVideoWidth, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Height</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding NaturalVideoHeight, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video FPS</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoFrameRate, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video SMTPE</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoSmtpeTimeCode, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Video Aspect Ratio</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding VideoAspectRatio, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel Background="{StaticResource KeyHeader}">
+                                    <TextBlock Style="{StaticResource Key}">Has Audio</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding HasAudio, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Audio Stream Index</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding AudioStreamIndex, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Audio Codec</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding AudioCodec, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Audio Bit Rate</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding AudioBitRate, Mode=OneWay, Converter={StaticResource BitFormatterConverter}}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Audio Channels</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding AudioChannels, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Audio Sampling</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding AudioSampleRate, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Audio Bits/Sample</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding AudioBitsPerSample, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel Background="{StaticResource KeyHeader}">
+                                    <TextBlock Style="{StaticResource Key}">Has Subtitles</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding HasSubtitles, Mode=OneWay}" />
+                                </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock Style="{StaticResource Key}">Subtitle Stream Index</TextBlock>
+                                    <TextBlock Style="{StaticResource Value}" Text="{Binding SubtitleStreamIndex, Mode=OneWay}" />
+                                </DockPanel>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+    </Grid>
+</local:BasePage>

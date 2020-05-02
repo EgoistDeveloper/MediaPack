@@ -1,0 +1,46 @@
+﻿<dialog:DialogWindow x:Class="MediaPack.Dialogs.Channel.ExportChannelsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MediaPack.Dialogs.Channel"
+        xmlns:dialog="clr-namespace:MediaPack.Dialogs" 
+        mc:Ignorable="d"
+        DataContext="{x:Null}">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type local:ExportChannelsDialog}" BasedOn="{StaticResource BasicWindowBaseStyle}"/>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CloseCommand}"/>
+    </Window.InputBindings>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="{Binding ResizeBorderThickness}"
+                      CaptionHeight="{Binding TitleHeight}"
+                      CornerRadius="0" GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <ComboBox Width="300" Margin="15 0"
+                  Foreground="{StaticResource Grey50Brush}"
+                  ItemsSource="{Binding ChannelTypes}"
+                  SelectedItem="{Binding SelectedChannelType}"
+                  ItemTemplate="{StaticResource ChannelTypeCBDataTemplate}"/>
+
+        <Button Grid.Column="1"
+                Height="35"
+                Margin="15 0"
+                Content="Dışarı Aktar"
+                Tag="{Binding Source={StaticResource Export}, Path=Data}" 
+                Style="{StaticResource LeftIconButtonStyle}"
+                Command="{Binding ExportChannelsCommand}"
+                ToolTip="Kanalları Dışa Aktar"/>
+    </Grid>
+</dialog:DialogWindow>

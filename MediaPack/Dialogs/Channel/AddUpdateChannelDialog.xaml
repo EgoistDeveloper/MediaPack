@@ -1,0 +1,97 @@
+﻿<dialog:DialogWindow x:Class="MediaPack.Dialogs.Channel.AddUpdateChannelDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MediaPack.Dialogs.Channel"
+        xmlns:dialog="clr-namespace:MediaPack.Dialogs"
+        mc:Ignorable="d"
+        DataContext="{x:Null}" Height="500" Width="750">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type local:AddUpdateChannelDialog}" BasedOn="{StaticResource BasicWindowBaseStyle}"/>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CloseCommand}"/>
+    </Window.InputBindings>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="{Binding ResizeBorderThickness}"
+                      CaptionHeight="{Binding TitleHeight}"
+                      CornerRadius="0" GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Kanal Detayları" 
+                  Padding="10" Margin="10 0">
+            <StackPanel Orientation="Vertical">
+                <TextBox Text="{Binding Channel.Name}" 
+                         Height="40" Width="Auto" 
+                         Margin="0 10" Tag="Title"/>
+                <TextBox Height="150" Text="{Binding Channel.Description}"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         AcceptsTab="True"
+                         VerticalScrollBarVisibility="Auto"/>
+                <TextBox Text="{Binding Channel.M3U8Address}" 
+                         Height="40" Width="Auto" 
+                         Margin="0 10" Tag="M3U8 Adresi"/>
+
+                <Button Style="{StaticResource ImageSelectionButtonStyle}"
+                        Content="{Binding Channel.Logo}"
+                        Command="{Binding AddLogoCommand}"
+                        Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type dialog:DialogWindow}}}"/>
+            </StackPanel>
+        </GroupBox>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <GroupBox Header="Meta Data" 
+                      Padding="10" Margin="10 0">
+                <StackPanel Orientation="Vertical">
+                    <ComboBox Width="300" Margin="10"
+                              Foreground="{StaticResource Grey50Brush}"
+                              ItemsSource="{Binding Countries}"
+                              SelectedItem="{Binding SelectedCountry}"
+                              ItemTemplate="{StaticResource CountryDataTemplate}"/>
+                                        
+                    <ComboBox Width="300" Margin="10"
+                              ItemsSource="{Binding ChannelTypes}"
+                              SelectedItem="{Binding Channel.ChannelType}"
+                              ItemTemplate="{StaticResource ChannelTypeCBDataTemplate}"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ComboBox Width="250" 
+                                  Margin="0 10 10 10"
+                                  HorizontalAlignment="Left"
+                                  Foreground="{StaticResource Grey50Brush}"
+                                  ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding SelectedCategory}"
+                                  ItemTemplate="{StaticResource ChannelCategoryCBDataTemplate}"/>
+                        <Button Width="40"
+                                Padding="10 0 0 0"
+                                Tag="{Binding Source={StaticResource Plus}, Path=Data}" 
+                                Style="{StaticResource LeftIconButtonStyle}"
+                                Command="{Binding AddCategoryCommand}"/>
+
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </Grid>
+
+</dialog:DialogWindow>

@@ -1,0 +1,41 @@
+﻿<Window x:Class="MediaPack.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MediaPack"
+        xmlns:controls="clr-namespace:MediaPack.UI.Controls"
+        xmlns:locator="clr-namespace:MediaPack.ViewModel.Base"
+        xmlns:pages="clr-namespace:MediaPack.UI.Pages.Base"
+        mc:Ignorable="d"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type local:MainWindow}" BasedOn="{StaticResource MainWindowStyle}"/>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="{Binding ResizeBorderThickness}"
+                      CaptionHeight="{Binding TitleHeight}"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="50"/>
+            <RowDefinition Height="Auto" MinHeight="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <controls:Navbar Grid.Row="1"/>
+
+        <pages:PageHost Grid.Row="2" 
+                        CurrentPage="{Binding ApplicationViewModel.CurrentPage,
+                                        Source={x:Static locator:ViewModelLocator.Instance}}"
+                        CurrentPageViewModel="{Binding ApplicationViewModel.CurrentPageViewModel,
+                                                Source={x:Static locator:ViewModelLocator.Instance}}"/>
+
+    </Grid>
+</Window>
